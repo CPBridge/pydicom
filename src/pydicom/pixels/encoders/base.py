@@ -773,7 +773,7 @@ ENCODING_PROFILES: dict[UID, list[ProfileType]] = {
         # Pixel Data Related Attributes"
         ("MONOCHROME1", 1, (0, 1), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 65)),
         ("MONOCHROME2", 1, (0, 1), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 65)),
-        ("PALETTE COLOR", 1, (0,), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 17)),
+        ("PALETTE COLOR", 1, (0,), (8, 16, 24, 32, 40, 48, 56, 64), range(1, 17)),
         ("RGB", 3, (0,), (8, 16, 24, 32, 40, 48, 56, 64), range(1, 39)),
         ("YBR_FULL", 3, (0,), (8, 16, 24, 32, 40, 48, 56, 64), range(1, 39)),
     ],
