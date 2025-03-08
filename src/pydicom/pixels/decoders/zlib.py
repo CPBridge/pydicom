@@ -10,7 +10,7 @@ from pydicom.pixels.utils import unpack_bits
 from pydicom.uid import DeflatedImageFrameCompression
 
 
-DECODER_DEPENDENCIES = {DeflatedImageFrameCompression: ("numpy")}
+DECODER_DEPENDENCIES = {DeflatedImageFrameCompression: ()}
 
 
 def is_available(uid: str) -> bool:
