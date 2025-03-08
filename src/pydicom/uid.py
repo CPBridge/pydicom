@@ -139,7 +139,8 @@ class UID(str):
             # Explicit VR Little Endian
             # Implicit VR Little Endian
             # Explicit VR Big Endian
-            # All encapsulated transfer syntaxes
+            # All encapsulated transfer syntaxes (including
+            # DeflatedImageFrameCompression)
             return False
 
         raise ValueError("UID is not a transfer syntax.")
@@ -344,6 +345,8 @@ with disable_value_validation():
     """1.2.840.10008.1.2.7.2"""
     SMPTEST211030PCMDigitalAudio = UID("1.2.840.10008.1.2.7.3")
     """1.2.840.10008.1.2.7.3"""
+    DeflatedImageFrameCompression = UID("1.2.840.10008.1.2.8.1")
+    """1.2.840.10008.1.2.8.1"""
 
 AllTransferSyntaxes = [
     ImplicitVRLittleEndian,
@@ -385,6 +388,7 @@ AllTransferSyntaxes = [
     SMPTEST211020UncompressedProgressiveActiveVideo,
     SMPTEST211020UncompressedInterlacedActiveVideo,
     SMPTEST211030PCMDigitalAudio,
+    DeflatedImageFrameCompression,
 ]
 """All non-retired transfer syntaxes and *Explicit VR Big Endian*."""
 

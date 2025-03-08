@@ -16,6 +16,7 @@ from pydicom import config
 from pydicom.pixels.common import Buffer, RunnerBase, CoderBase, RunnerOptions
 from pydicom.uid import (
     UID,
+    DeflatedImageFrameCompression,
     JPEGBaseline8Bit,
     JPEGExtended12Bit,
     JPEGLossless,
@@ -767,6 +768,15 @@ ENCODING_PROFILES: dict[UID, list[ProfileType]] = {
         ("YBR_FULL", 3, (0,), (8,), range(1, 9)),
         ("RGB", 3, (0,), (8, 16), range(1, 17)),
     ],
+    DeflatedImageFrameCompression: [  # 1.2.840.10008.1.2.8.1
+        # Section 8.2.16 in PS3.5 "there are no restrictions on the values of
+        # Pixel Data Related Attributes"
+        ("MONOCHROME1", 1, (0, 1), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 65)),
+        ("MONOCHROME2", 1, (0, 1), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 65)),
+        ("PALETTE COLOR", 1, (0,), (1, 8, 16, 24, 32, 40, 48, 56, 64), range(1, 17)),
+        ("RGB", 3, (0,), (8, 16, 24, 32, 40, 48, 56, 64), range(1, 39)),
+        ("YBR_FULL", 3, (0,), (8, 16, 24, 32, 40, 48, 56, 64), range(1, 39)),
+    ],
 }
 
 # Encoder names should be f"{UID.keyword}Encoder"
@@ -799,6 +809,11 @@ JPEG2000Encoder.add_plugin(
     "pylibjpeg", ("pydicom.pixels.encoders.pylibjpeg", "_encode_frame")
 )
 
+DeflatedImageFrameCompressionEncoder = Encoder(DeflatedImageFrameCompression)
+DeflatedImageFrameCompressionEncoder.add_plugin(
+    "zlib", ("pydicom.pixels.encoders.zlib", "_encode_frame")
+)
+
 
 # Available pixel data encoders
 _PIXEL_DATA_ENCODERS = {
@@ -808,6 +823,7 @@ _PIXEL_DATA_ENCODERS = {
     JPEGLSNearLossless: (JPEGLSNearLosslessEncoder, "3.0"),
     JPEG2000Lossless: (JPEG2000LosslessEncoder, "3.0"),
     JPEG2000: (JPEG2000Encoder, "3.0"),
+    DeflatedImageFrameCompression: (DeflatedImageFrameCompressionEncoder, "3.1"),
 }
 
 
@@ -818,6 +834,7 @@ def _build_encoder_docstrings() -> None:
         "pylibjpeg": ":ref:`pylibjpeg <encoder_plugin_pylibjpeg>`",
         "gdcm": ":ref:`gdcm <encoder_plugin_gdcm>`",
         "pyjpegls": ":ref:`pyjpegls <encoder_plugin_pyjpegls>`",
+        "zlib": ":ref:`zlib <encoder_plugin_zlib>`",
     }
 
     for enc, versionadded in _PIXEL_DATA_ENCODERS.values():
@@ -849,21 +866,23 @@ def get_encoder(uid: str) -> Encoder:
 
     .. versionadded:: 2.2
 
-    +--------------------------------------------------+----------------+
-    | Transfer Syntax                                  | Version added  |
-    +-------------------------+------------------------+                +
-    | Name                    | UID                    |                |
-    +=========================+========================+================+
-    | *JPEG-LS Lossless*      | 1.2.840.10008.1.2.4.80 | 3.0            |
-    +-------------------------+------------------------+----------------+
-    | *JPEG-LS Near Lossless* | 1.2.840.10008.1.2.4.81 | 3.0            |
-    +-------------------------+------------------------+----------------+
-    | *JPEG 2000 Lossless*    | 1.2.840.10008.1.2.4.90 | 3.0            |
-    +-------------------------+------------------------+----------------+
-    | *JPEG 2000*             | 1.2.840.10008.1.2.4.91 | 3.0            |
-    +-------------------------+------------------------+----------------+
-    | *RLE Lossless*          | 1.2.840.10008.1.2.5    | 2.2            |
-    +-------------------------+------------------------+----------------+
+    +-------------------------------------------------------------+----------------+
+    | Transfer Syntax                                             | Version added  |
+    +------------------------------------+------------------------+                +
+    | Name                               | UID                    |                |
+    +====================================+========================+================+
+    | *JPEG-LS Lossless*                 | 1.2.840.10008.1.2.4.80 | 3.0            |
+    +------------------------------------+------------------------+----------------+
+    | *JPEG-LS Near Lossless*            | 1.2.840.10008.1.2.4.81 | 3.0            |
+    +------------------------------------+------------------------+----------------+
+    | *JPEG 2000 Lossless*               | 1.2.840.10008.1.2.4.90 | 3.0            |
+    +------------------------------------+------------------------+----------------+
+    | *JPEG 2000*                        | 1.2.840.10008.1.2.4.91 | 3.0            |
+    +------------------------------------+------------------------+----------------+
+    | *RLE Lossless*                     | 1.2.840.10008.1.2.5    | 2.2            |
+    +------------------------------------+------------------------+----------------+
+    | *Deflated Image Frame Compression* | 1.2.840.10008.1.2.8.1  | 3.1            |
+    +------------------------------------+------------------------+----------------+
     """
     uid = UID(uid)
     try:

@@ -51,6 +51,7 @@ from pydicom.uid import (
     JPEG2000TransferSyntaxes,
     JPEGLSTransferSyntaxes,
     JPEGTransferSyntaxes,
+    DeflatedImageFrameCompression,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -1932,6 +1933,11 @@ RLELosslessDecoder.add_plugins(
     ]
 )
 
+DeflatedImageFrameCompressionDecoder = Decoder(DeflatedImageFrameCompression)
+DeflatedImageFrameCompressionDecoder.add_plugin(
+    "zlib", ("pydicom.pixels.decoders.zlib", "_decode_frame")
+)
+
 
 # Available pixel data decoders
 _PIXEL_DATA_DECODERS = {
@@ -1952,6 +1958,7 @@ _PIXEL_DATA_DECODERS = {
     HTJ2KLosslessRPCL: (HTJ2KLosslessRPCLDecoder, "3.0"),
     HTJ2K: (HTJ2KDecoder, "3.0"),
     RLELossless: (RLELosslessDecoder, "3.0"),
+    DeflatedImageFrameCompression: (DeflatedImageFrameCompressionDecoder, "3.1"),
 }
 
 
@@ -2028,6 +2035,8 @@ def get_decoder(uid: str) -> Decoder:
     | *HTJ2K*                              | 1.2.840.10008.1.2.4.203    | 3.0     |
     +--------------------------------------+----------------------------+---------+
     | *RLE Lossless*                       | 1.2.840.10008.1.2.5        | 3.0     |
+    +--------------------------------------+----------------------------+---------+
+    | *Deflated Image Fram Compression*    | 1.2.840.10008.1.2.8.1      | 3.1     |
     +--------------------------------------+----------------------------+---------+
     """
     uid = UID(uid)
