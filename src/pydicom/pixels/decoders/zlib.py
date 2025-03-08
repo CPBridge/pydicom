@@ -3,7 +3,7 @@
 
 This module is not intended to be used directly.
 """
-from zlib import decompress
+import zlib
 
 from pydicom.pixels.decoders.base import DecodeRunner
 from pydicom.pixels.utils import unpack_bits
@@ -42,7 +42,7 @@ def _decode_frame(src: bytes, runner: DecodeRunner) -> bytes:
     bytearray
         The decoded frame, ordered as planar configuration 1.
     """
-    decoded = decompress(src, wbits=-15)
+    decoded = zlib.decompress(src, wbits=-zlib.MAX_WBITS)
 
     if runner.bits_allocated == 1:
         return unpack_bits(decoded, as_array=False)

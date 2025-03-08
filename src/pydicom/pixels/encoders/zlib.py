@@ -1,7 +1,7 @@
 # Copyright 2008-2024 pydicom authors. See LICENSE file for details.
 """Interface for *Pixel Data* encoding, not intended to be used directly."""
 
-from zlib import compressobj
+import zlib
 from pydicom.pixels.encoders.base import EncodeRunner
 from pydicom.pixels.utils import pack_bits
 from pydicom.uid import DeflatedImageFrameCompression
@@ -47,7 +47,7 @@ def _encode_frame(src: bytes, runner: EncodeRunner) -> bytes:
         src_arr = np.frombuffer(src, dtype=np.uint8)
         src = pack_bits(src_arr)
 
-    # Use wbits=-15 to use the maximum window length but without a
+    # Use wbits=-zlib.MAX_WBITS to use the maximum window length but without a
     # zlib-specific header
-    compressor = compressobj(wbits=-15)
+    compressor = zlib.compressobj(wbits=-zlib.MAX_WBITS)
     return compressor.compress(src) + compressor.flush()
