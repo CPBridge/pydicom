@@ -412,8 +412,12 @@ class EncodeRunner(RunnerBase):
     def _validate_buffer(self) -> None:
         """Validate the supplied pixel data buffer."""
         # Check the length is at least as long as required
-        length_bytes = self.frame_length(unit="bytes")
-        expected = length_bytes * self.number_of_frames
+        if self.bits_allocated == 1:
+            expected = self.frame_length(unit="pixels") / 8
+        else:
+            length_bytes = self.frame_length(unit="bytes")
+            expected = length_bytes * self.number_of_frames
+
         if (actual := len(self.src)) < expected:
             raise ValueError(
                 "The length of the uncompressed pixel data doesn't match the "
