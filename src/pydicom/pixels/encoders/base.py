@@ -14,6 +14,7 @@ except ImportError:
 
 from pydicom import config
 from pydicom.pixels.common import Buffer, RunnerBase, CoderBase, RunnerOptions
+from pydicom.pixels.utils import unpack_bits
 from pydicom.uid import (
     UID,
     DeflatedImageFrameCompression,
@@ -87,6 +88,7 @@ class EncodeRunner(RunnerBase):
         }
         self._undeletable = ("transfer_syntax_uid", "pixel_keyword", "byteorder")
         self._encoders: dict[str, EncodeFunction] = {}
+        self._src_unpacked = False
 
     def encode(self, index: int | None) -> bytes:
         """Return an encoded frame of pixel data as :class:`bytes`.
@@ -176,7 +178,17 @@ class EncodeRunner(RunnerBase):
         #    8 < precision <= 16: a 16-bit container (short)
         #   16 < precision <= 32: a 32-bit container (int/long)
         #   32 < precision <= 64: a 64-bit container (long long)
-        bytes_per_frame = cast(int, self.frame_length(unit="bytes"))
+        if self.bits_allocated == 1:
+
+            if self._src_type in ("Dataset", "Buffer") and not self._src_unpacked:
+                # Unpack the packed bits
+                self._src = unpack_bits(self._src, as_array=False)
+                self._src_unpacked = True
+
+            # Bytes have already been unpacked to give 1 byte per pixel
+            bytes_per_frame = cast(int, self.frame_length(unit="pixels"))
+        else:
+            bytes_per_frame = cast(int, self.frame_length(unit="bytes"))
         start = 0 if index is None else index * bytes_per_frame
         src = cast(bytes, self.src[start : start + bytes_per_frame])
 
@@ -291,6 +303,8 @@ class EncodeRunner(RunnerBase):
                 "'src' must be bytes, numpy.ndarray or pydicom.dataset.Dataset, "
                 f"not '{src.__class__.__name__}'"
             )
+
+        self._src_unpacked = False
 
     @property
     def src(self) -> "Buffer | np.ndarray":
