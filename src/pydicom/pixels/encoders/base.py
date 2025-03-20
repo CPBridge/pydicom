@@ -780,8 +780,8 @@ ENCODING_PROFILES: dict[UID, list[ProfileType]] = {
         ("YBR_FULL", 3, (0,), (8, 16, 24, 32, 40), range(1, 39)),
     ],
     RLELossless: [  # 1.2.840.10008.1.2.5: Table 8.2.2-1 in PS3.5
-        ("MONOCHROME1", 1, (0, 1), (8, 16), range(1, 17)),
-        ("MONOCHROME2", 1, (0, 1), (8, 16), range(1, 17)),
+        ("MONOCHROME1", 1, (0, 1), (1, 8, 16), range(1, 17)),
+        ("MONOCHROME2", 1, (0, 1), (1, 8, 16), range(1, 17)),
         ("PALETTE COLOR", 1, (0,), (8, 16), range(1, 17)),
         ("YBR_FULL", 3, (0,), (8,), range(1, 9)),
         ("RGB", 3, (0,), (8, 16), range(1, 17)),

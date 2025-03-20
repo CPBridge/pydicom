@@ -6,7 +6,9 @@ import math
 from struct import pack
 
 from pydicom.pixels.encoders.base import EncodeRunner
+from pydicom.pixels.utils import pack_bits
 from pydicom.uid import RLELossless
+import numpy as np
 
 
 ENCODER_DEPENDENCIES = {RLELossless: ()}
@@ -36,6 +38,12 @@ def _encode_frame(src: bytes, runner: EncodeRunner) -> bytes:
     """
     if runner.get_option("byteorder", "<") == ">":
         raise ValueError("Unsupported option \"byteorder = '>'\"")
+
+    # In the case of single bit images, the data must first be bit-packed
+    # before being encoded with Deflate
+    if runner.get_option("bits_allocated") == 1:
+        src_arr = np.frombuffer(src, dtype=np.uint8)
+        src = pack_bits(src_arr)
 
     bytes_allocated = math.ceil(runner.bits_allocated / 8)
 

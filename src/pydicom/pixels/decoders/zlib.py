@@ -40,7 +40,9 @@ def _decode_frame(src: bytes, runner: DecodeRunner) -> bytes:
     Returns
     -------
     bytearray
-        The decoded frame, ordered as planar configuration 1.
+        The decoded frame, ordered as planar configuration 1. In the case of
+        single bit data, the returned array is unpacked (one byte per sample).
+
     """
     decoded = zlib.decompress(src, wbits=-zlib.MAX_WBITS)
 
