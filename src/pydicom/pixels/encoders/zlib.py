@@ -7,22 +7,14 @@ from pydicom.pixels.utils import pack_bits
 from pydicom.uid import DeflatedImageFrameCompression
 
 
-try:
-    import numpy as np
-
-    HAVE_NP = True
-except ImportError:
-    HAVE_NP = False
-
-
-ENCODER_DEPENDENCIES = {DeflatedImageFrameCompression: ("numpy")}
+ENCODER_DEPENDENCIES = {DeflatedImageFrameCompression: ()}
 
 
 def is_available(uid: str) -> bool:
     """Return ``True`` if a pixel data encoder for `uid` is available for use,
     ``False`` otherwise.
     """
-    return HAVE_NP
+    return True
 
 
 def _encode_frame(src: bytes, runner: EncodeRunner) -> bytes:
@@ -44,8 +36,7 @@ def _encode_frame(src: bytes, runner: EncodeRunner) -> bytes:
     # In the case of single bit images, the data must first be bit-packed
     # before being encoded with Deflate
     if runner.bits_allocated == 1:
-        src_arr = np.frombuffer(src, dtype=np.uint8)
-        src = pack_bits(src_arr)
+        src = pack_bits(src)
 
     # Use wbits=-zlib.MAX_WBITS to use the maximum window length but without a
     # zlib-specific header

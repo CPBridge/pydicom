@@ -1929,6 +1929,10 @@ class Dataset:
         |                        |                      | pylibjpeg,| </guides/encoding/rle_lossless>` |
         |                        |                      | gdcm      |                                  |
         +------------------------+----------------------+-----------+----------------------------------+
+        | *Deflated Image Frame* | 1.2.840.10008.1.2.8.1| zlib      | :doc:`Deflate                    |
+        | *Compression*          |                      |           | </guides/encoding/deflate>`      |
+        |                        |                      |           |                                  |
+        +------------------------+----------------------+-----------+----------------------------------+
 
         .. versionchanged:: 3.0
 
